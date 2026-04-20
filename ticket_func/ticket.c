@@ -8,8 +8,8 @@
 
 const char *MOVIES[NUM_MOVIES] = {
     "Interestelar",
-    "Matrix",
-    "O Senhor dos Aneis"};
+    "Perdido em Marte",
+    "Devoradores de Estrelas"};
 
 const int ROOMS[NUM_MOVIES] = {1, 2, 3};
 
