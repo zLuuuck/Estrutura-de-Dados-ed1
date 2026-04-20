@@ -1,17 +1,35 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
-#include "system.h"
+#include <system.h>
 #include "../ticket_func/ticket.h"
 
+#ifdef _WIN32
+#define CLEAR_CMD "cls"
+#else
+#define CLEAR_CMD "clear"
+#endif
+
 /* ------------------------------------------------------------------ */
-/*  Utilitário interno                                                 */
+/*  Utilitários internos                                               */
 /* ------------------------------------------------------------------ */
+
+static void clearScreen(void)
+{
+    system(CLEAR_CMD);
+}
 
 static void clearInputBuffer(void)
 {
     int c;
     while ((c = getchar()) != '\n' && c != EOF)
         ;
+}
+
+static void pauseScreen(void)
+{
+    printf("\n  Pressione ENTER para continuar...");
+    clearInputBuffer();
 }
 
 /* ------------------------------------------------------------------ */
@@ -213,6 +231,39 @@ void showSystemStatus(const Queue *buyQueue,
 /*  Menu principal                                                     */
 /* ------------------------------------------------------------------ */
 
+static void printMenu(const Queue *buyQueue,
+                      const Stack stacks[],
+                      const Queue roomQueues[])
+{
+    printf("=========================================\n");
+    printf("      CineCapi - Sistema de Ingressos    \n");
+    printf("=========================================\n");
+
+    /* Mini status no topo do menu */
+    printf("  Fila de compra : %d cliente(s)\n", queueSize(buyQueue));
+    for (int i = 0; i < NUM_MOVIES; i++)
+    {
+        printf("  %-20s: %d ingresso(s) | %d na sala\n",
+               MOVIES[i],
+               stackSize(&stacks[i]),
+               queueSize(&roomQueues[i]));
+    }
+
+    printf("-----------------------------------------\n");
+    printf("  [1] Preencher fila de clientes (auto)\n");
+    printf("  [2] Preencher pilhas de ingressos (auto)\n");
+    printf("  [3] Vender ingresso (escolher filme)\n");
+    printf("  [4] Vender todos os ingressos (automatico)\n");
+    printf("  [5] Ver clientes aguardando na fila\n");
+    printf("  [6] Ver clientes atendidos (por sala)\n");
+    printf("  [7] Ver ingressos disponiveis\n");
+    printf("  [8] Ver ingressos vendidos\n");
+    printf("  [9] Ver status geral\n");
+    printf("  [0] Sair\n");
+    printf("-----------------------------------------\n");
+    printf("  Opcao: ");
+}
+
 static void printMovieOptions(void)
 {
     printf("\n  Escolha o filme:\n");
@@ -232,23 +283,11 @@ void mainMenu(Queue *buyQueue,
 
     do
     {
-        printf("\n");
-        printf("=========================================\n");
-        printf("      CineCapi - Sistema de Ingressos    \n");
-        printf("=========================================\n");
-        printf("  [1] Preencher fila de clientes (auto)\n");
-        printf("  [2] Preencher pilhas de ingressos (auto)\n");
-        printf("  [3] Vender ingresso (escolher filme)\n");
-        printf("  [4] Vender todos os ingressos (automatico)\n");
-        printf("  [5] Ver clientes aguardando na fila\n");
-        printf("  [6] Ver clientes atendidos (por sala)\n");
-        printf("  [7] Ver ingressos disponiveis\n");
-        printf("  [8] Ver ingressos vendidos\n");
-        printf("  [9] Ver status geral\n");
-        printf("  [0] Sair\n");
-        printf("-----------------------------------------\n");
-        printf("  Opcao: ");
+        /* 1. Limpa a tela e exibe o menu */
+        clearScreen();
+        printMenu(buyQueue, stacks, roomQueues);
 
+        /* 2. Lê a opção do usuário */
         if (scanf("%d", &option) != 1)
         {
             clearInputBuffer();
@@ -259,21 +298,33 @@ void mainMenu(Queue *buyQueue,
             clearInputBuffer();
         }
 
+        /* 3. Limpa a tela e executa a ação */
+        clearScreen();
+
         switch (option)
         {
 
         case 1:
-            printf("\n--- Preenchendo fila de clientes ---\n");
+            printf("=========================================\n");
+            printf("      [1] Preencher fila de clientes     \n");
+            printf("=========================================\n");
             fillUserQueue(buyQueue);
+            pauseScreen();
             break;
 
         case 2:
-            printf("\n--- Preenchendo pilhas de ingressos ---\n");
+            printf("=========================================\n");
+            printf("    [2] Preencher pilhas de ingressos    \n");
+            printf("=========================================\n");
             fillTicketStacks(stacks);
+            pauseScreen();
             break;
 
         case 3:
         {
+            printf("=========================================\n");
+            printf("         [3] Vender ingresso             \n");
+            printf("=========================================\n");
             printMovieOptions();
             int choice;
             if (scanf("%d", &choice) != 1)
@@ -282,41 +333,74 @@ void mainMenu(Queue *buyQueue,
                 break;
             }
             clearInputBuffer();
+            clearScreen();
+            printf("=========================================\n");
+            printf("         [3] Vender ingresso             \n");
+            printf("=========================================\n");
             sellTicket(buyQueue, stacks, roomQueues, choice - 1);
+            pauseScreen();
             break;
         }
 
         case 4:
-            printf("\n--- Vendendo todos os ingressos ---\n");
+            printf("=========================================\n");
+            printf("   [4] Vender todos os ingressos (auto)  \n");
+            printf("=========================================\n");
             sellAllTickets(buyQueue, stacks, roomQueues);
+            pauseScreen();
             break;
 
         case 5:
+            printf("=========================================\n");
+            printf("      [5] Clientes aguardando na fila    \n");
+            printf("=========================================\n");
             showPendingUsers(buyQueue);
+            pauseScreen();
             break;
 
         case 6:
+            printf("=========================================\n");
+            printf("       [6] Clientes atendidos por sala   \n");
+            printf("=========================================\n");
             showAttendedUsers(roomQueues);
+            pauseScreen();
             break;
 
         case 7:
+            printf("=========================================\n");
+            printf("       [7] Ingressos disponiveis         \n");
+            printf("=========================================\n");
             showAvailableTickets(stacks);
+            pauseScreen();
             break;
 
         case 8:
+            printf("=========================================\n");
+            printf("         [8] Ingressos vendidos          \n");
+            printf("=========================================\n");
             showSoldTickets(roomQueues);
+            pauseScreen();
             break;
 
         case 9:
+            printf("=========================================\n");
+            printf("          [9] Status geral               \n");
+            printf("=========================================\n");
             showSystemStatus(buyQueue, stacks, roomQueues);
+            pauseScreen();
             break;
 
         case 0:
-            printf("\n  Encerrando o sistema CineCapi. Ate logo!\n\n");
+            clearScreen();
+            printf("=========================================\n");
+            printf("      CineCapi - Sistema de Ingressos    \n");
+            printf("=========================================\n");
+            printf("\n  Encerrando o sistema. Ate logo!\n\n");
             break;
 
         default:
             printf("  [ERRO] Opcao invalida. Tente novamente.\n");
+            pauseScreen();
         }
 
     } while (option != 0);
