@@ -68,6 +68,6 @@ int buscarNaFila(FilaClientes *f, const char *nomeCliente) {
             return count;  // posição relativa na fila (0 = primeiro)
         }
         i = (i + 1) % MAX_CLIENTES;
-    }
+    } 
     return -1;
 }

@@ -1,0 +1,1 @@
+Pasta para centralizar todas as funções com ingressos

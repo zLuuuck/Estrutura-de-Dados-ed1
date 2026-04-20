@@ -1,0 +1,1 @@
+pastas para centralizar todas as funcções com clientes
