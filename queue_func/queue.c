@@ -47,6 +47,16 @@ int peekFront(const Queue *q, User *u)
     return 1;
 }
 
+int peekLast(const Queue *q, User *u)
+{
+    if (isQueueEmpty(q))
+        return 0;
+    // O último elemento está na posição anterior ao rear (com wrap-around)
+    int idx = (q->rear - 1 + MAX_QUEUE) % MAX_QUEUE;
+    *u = q->data[idx];
+    return 1;
+}
+
 int queueSize(const Queue *q)
 {
     return q->size;

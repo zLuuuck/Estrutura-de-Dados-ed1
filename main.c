@@ -1,7 +1,9 @@
 #include "main.h"
+#include "locale.h"
 
 int main(void)
 {
+    setlocale(LC_ALL, "pt-br.UTF-8");
     /* Fila de compra: clientes aguardando para comprar ingresso */
     Queue buyQueue;
     initQueue(&buyQueue);

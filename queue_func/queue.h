@@ -31,6 +31,9 @@ int dequeue(Queue *q, User *u);
 /* Espia o início sem remover. Retorna 1 em sucesso, 0 se vazia */
 int peekFront(const Queue *q, User *u);
 
+/* Espia o último elemento da fila sem remover. Retorna 1 em sucesso, 0 se vazia */
+int peekLast(const Queue *q, User *u);
+
 /* Retorna quantos elementos há na fila */
 int queueSize(const Queue *q);
 

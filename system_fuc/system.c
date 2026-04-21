@@ -162,6 +162,100 @@ void sellAllTickets(Queue *buyQueue,
 }
 
 /* ------------------------------------------------------------------ */
+/*  Funções de busca                                                  */
+/* ------------------------------------------------------------------ */
+
+void searchUserInBuyQueue(const Queue *buyQueue)
+{
+    if (isQueueEmpty(buyQueue))
+    {
+        printf("  A fila de compra está vazia.\n");
+        return;
+    }
+
+    char name[MAX_USER_NAME];
+    printf("  Digite o nome do cliente: ");
+    if (scanf(" %[^\n]", name) != 1)
+    {
+        clearInputBuffer();
+        printf("  Entrada inválida.\n");
+        return;
+    }
+    clearInputBuffer();
+
+    int pos = searchUserByName(buyQueue, name);
+    if (pos == -1)
+    {
+        printf("  Cliente \"%s\" não encontrado na fila de compra.\n", name);
+    }
+    else
+    {
+        printf("  Cliente \"%s\" encontrado na posição %d da fila.\n", name, pos + 1);
+        // Exibe os dados do cliente encontrado (opcional)
+        User u;
+        // Para exibir, precisamos pegar o elemento. Podemos iterar até a posição.
+        int idx = (buyQueue->front + pos) % MAX_QUEUE;
+        u = buyQueue->data[idx];
+        printUser(&u);
+    }
+}
+
+void searchTicketInStack(const Stack *stack, int movieIdx)
+{
+    if (movieIdx < 0 || movieIdx >= NUM_MOVIES)
+    {
+        printf("  Índice de filme inválido.\n");
+        return;
+    }
+    if (isStackEmpty(stack))
+    {
+        printf("  A pilha de ingressos para \"%s\" está vazia.\n", MOVIES[movieIdx]);
+        return;
+    }
+
+    // Como a pilha já é específica do filme, a busca por nome do filme é redundante,
+    // mas podemos buscar se existe um ingresso com aquele nome (todos têm o mesmo).
+    // Exibiremos o topo e a quantidade.
+    printf("  Filme selecionado: %s\n", MOVIES[movieIdx]);
+    printf("  Ingressos disponíveis: %d\n", stackSize(stack));
+    if (!isStackEmpty(stack))
+    {
+        Ticket t;
+        peekTop(stack, &t);
+        printf("  Próximo ingresso a ser vendido (topo):\n");
+        printTicket(&t);
+    }
+}
+
+/* ------------------------------------------------------------------ */
+/*  Espiar elementos da fila                                           */
+/* ------------------------------------------------------------------ */
+
+void showNextUser(const Queue *buyQueue)
+{
+    User u;
+    if (!peekFront(buyQueue, &u))
+    {
+        printf("  A fila de compra está vazia.\n");
+        return;
+    }
+    printf("  Próximo cliente a ser atendido:\n");
+    printUser(&u);
+}
+
+void showLastUser(const Queue *buyQueue)
+{
+    User u;
+    if (!peekLast(buyQueue, &u))
+    {
+        printf("  A fila de compra está vazia.\n");
+        return;
+    }
+    printf("  Último cliente da fila (entrou mais recentemente):\n");
+    printUser(&u);
+}
+
+/* ------------------------------------------------------------------ */
 /*  Visualização                                                       */
 /* ------------------------------------------------------------------ */
 
@@ -259,6 +353,11 @@ static void printMenu(const Queue *buyQueue,
     printf("  [7] Ver ingressos disponiveis\n");
     printf("  [8] Ver ingressos vendidos\n");
     printf("  [9] Ver status geral\n");
+    printf("  [10] Buscar cliente na fila de compra\n");
+    printf("  [11] Buscar ingresso por filme\n");
+    printf("  [12] Ver próximo cliente da fila\n");
+    printf("  [13] Ver último cliente da fila\n");
+    printf("  [0] Sair\n");
     printf("  [0] Sair\n");
     printf("-----------------------------------------\n");
     printf("  Opcao: ");
@@ -384,9 +483,62 @@ void mainMenu(Queue *buyQueue,
 
         case 9:
             printf("=========================================\n");
-            printf("          [9] Status geral               \n");
+            printf("              [9] Status geral           \n");
             printf("=========================================\n");
             showSystemStatus(buyQueue, stacks, roomQueues);
+            pauseScreen();
+            break;
+
+        case 10:
+            printf("=========================================\n");
+            printf("     [10] Buscar cliente na fila        \n");
+            printf("=========================================\n");
+            searchUserInBuyQueue(buyQueue);
+            pauseScreen();
+            break;
+
+        case 11:
+        {
+            printf("=========================================\n");
+            printf("     [11] Buscar ingresso por filme     \n");
+            printf("=========================================\n");
+            printMovieOptions();
+            int choice;
+            if (scanf("%d", &choice) != 1)
+            {
+                clearInputBuffer();
+                break;
+            }
+            clearInputBuffer();
+            clearScreen();
+            printf("=========================================\n");
+            printf("     [11] Buscar ingresso por filme     \n");
+            printf("=========================================\n");
+            if (choice >= 1 && choice <= NUM_MOVIES)
+            {
+                searchTicketInStack(&stacks[choice - 1], choice - 1);
+            }
+            else
+            {
+                printf("  Opção inválida.\n");
+            }
+            pauseScreen();
+            break;
+        }
+
+        case 12:
+            printf("=========================================\n");
+            printf("    [12] Próximo cliente da fila        \n");
+            printf("=========================================\n");
+            showNextUser(buyQueue);
+            pauseScreen();
+            break;
+
+        case 13:
+            printf("=========================================\n");
+            printf("     [13] Último cliente da fila        \n");
+            printf("=========================================\n");
+            showLastUser(buyQueue);
             pauseScreen();
             break;
 

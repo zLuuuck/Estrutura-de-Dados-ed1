@@ -68,4 +68,13 @@ void showSystemStatus(const Queue *buyQueue,
                       const Stack stacks[],
                       const Queue roomQueues[]);
 
+/* Busca um cliente pelo nome na fila de compra e exibe sua posição */
+void searchUserInBuyQueue(const Queue *buyQueue);
+
+/* Busca um ingresso pelo nome do filme em uma pilha específica */
+void searchTicketInStack(const Stack *stack, int movieIdx);
+
+void showNextUser(const Queue *buyQueue);
+void showLastUser(const Queue *buyQueue);
+
 #endif /* SYSTEM_H */
