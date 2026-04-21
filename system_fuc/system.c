@@ -358,7 +358,6 @@ static void printMenu(const Queue *buyQueue,
     printf("  [12] Ver próximo cliente da fila\n");
     printf("  [13] Ver último cliente da fila\n");
     printf("  [0] Sair\n");
-    printf("  [0] Sair\n");
     printf("-----------------------------------------\n");
     printf("  Opcao: ");
 }
